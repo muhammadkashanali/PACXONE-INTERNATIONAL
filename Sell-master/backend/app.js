@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import quoteRoutes from "./routes/quoteRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/quotes", quoteRoutes);
+app.use("/api/uploads", uploadRoutes);
 
 app.use((err, _req, res, _next) => {
   console.error(err);

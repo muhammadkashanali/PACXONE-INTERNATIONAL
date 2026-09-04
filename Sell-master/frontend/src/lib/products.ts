@@ -17,6 +17,7 @@ export interface Product {
   categoryId: string;
   description: string;
   image: string;
+  datasheet?: string;
   features: string[];
   applications: string[];
   specs: { label: string; value: string }[];

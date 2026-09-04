@@ -18,6 +18,7 @@ const productSchema = new mongoose.Schema(
     category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: false },
     description: { type: String, required: true },
     image: { type: String, default: "" },
+    datasheet: { type: String, default: "", trim: true },
     features: [{ type: String }],
     applications: [{ type: String }],
     specs: [specSchema],

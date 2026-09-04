@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Check, Download, Mail, FileText } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Download, Mail, FileText, ClipboardPlus, MessageCircle } from "lucide-react";
 import { fetchCategories, fetchProductById, fetchProducts } from "@/lib/catalog";
 import type { Product } from "@/lib/products";
+import { addToQuoteCart, getQuoteCart } from "@/lib/quoteCart";
 
 export const Route = createFileRoute("/products/$id")({
   loader: async ({ params }) => {
@@ -57,6 +59,14 @@ function ErrorView({ error }: { error: Error }) {
 function ProductDetail() {
   const { product, categories, related } = Route.useLoaderData();
   const category = categories.find((c) => c.id === product.categoryId || c.slug === product.categoryId);
+  const [quoteAdded, setQuoteAdded] = useState(() => getQuoteCart().some((item) => item.id === product.id));
+  const engineerMessage = encodeURIComponent(`Hello Pacxone International, I need technical assistance with ${product.name}, model ${product.model}.`);
+
+  useEffect(() => {
+    const syncQuoteCart = () => setQuoteAdded(getQuoteCart().some((item) => item.id === product.id));
+    window.addEventListener("quote-cart-updated", syncQuoteCart);
+    return () => window.removeEventListener("quote-cart-updated", syncQuoteCart);
+  }, [product.id]);
 
   return (
     <>
@@ -84,7 +94,6 @@ function ProductDetail() {
             <img src={product.image} alt={product.name} width={1024} height={768} className="h-full w-full object-cover" />
           </div>
           <div>
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{product.brand}</span>
             <h1 className="mt-3 text-3xl sm:text-4xl font-bold tracking-tight">{product.name}</h1>
             <div className="mt-3 flex items-center gap-3 text-sm text-muted-foreground">
               <span>Model: <span className="font-mono text-foreground">{product.model}</span></span>
@@ -94,15 +103,33 @@ function ProductDetail() {
             <p className="mt-6 text-muted-foreground leading-relaxed">{product.description}</p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/contact" className="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-[oklch(0.42_0.075_335)] transition-colors">
+              <button
+                type="button"
+                disabled={quoteAdded}
+                onClick={() => addToQuoteCart(product)}
+                className="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-[oklch(0.42_0.075_335)] transition-colors disabled:cursor-default disabled:opacity-70"
+              >
+                <ClipboardPlus className="h-4 w-4" /> {quoteAdded ? "Added to quote" : "Add to quote"}
+              </button>
+              <Link to="/contact" className="inline-flex h-11 items-center gap-2 rounded-md border border-border px-5 text-sm font-semibold hover:bg-secondary transition-colors">
                 Request Quote <ArrowRight className="h-4 w-4" />
               </Link>
+              <a
+                href={`https://wa.me/923002409524?text=${engineerMessage}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex h-11 items-center gap-2 rounded-md border border-[#25D366] px-5 text-sm font-semibold text-[#168f45] hover:bg-[#25D366]/10 transition-colors"
+              >
+                <MessageCircle className="h-4 w-4" /> Ask an Engineer
+              </a>
               <a href={`mailto:info@pacxoneinternational.com?subject=Inquiry about ${encodeURIComponent(product.name)}`} className="inline-flex h-11 items-center gap-2 rounded-md border border-border px-5 text-sm font-semibold hover:bg-secondary transition-colors">
                 <Mail className="h-4 w-4" /> Email Inquiry
               </a>
-              <button className="inline-flex h-11 items-center gap-2 rounded-md border border-border px-5 text-sm font-semibold hover:bg-secondary transition-colors">
-                <Download className="h-4 w-4" /> Datasheet
-              </button>
+              {product.datasheet && (
+                <a href={product.datasheet} target="_blank" rel="noreferrer" className="inline-flex h-11 items-center gap-2 rounded-md border border-border px-5 text-sm font-semibold hover:bg-secondary transition-colors">
+                  <Download className="h-4 w-4" /> Datasheet
+                </a>
+              )}
             </div>
 
             <div className="mt-10 grid sm:grid-cols-2 gap-6">

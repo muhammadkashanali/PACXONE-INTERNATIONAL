@@ -23,11 +23,33 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
       message = errorText || message;
     }
 
+    if (response.status === 401 && typeof window !== 'undefined') {
+      localStorage.removeItem('pacxone-admin-user');
+      localStorage.removeItem('pacxone-token');
+      window.location.assign('/login');
+    }
+
     throw new Error(message);
   }
 
   const text = await response.text();
   return text ? (JSON.parse(text) as T) : (undefined as T);
+}
+
+export async function uploadAdminFile(file: File) {
+  const token = localStorage.getItem('pacxone-token');
+  const body = new FormData();
+  body.append('file', file);
+
+  const response = await fetch(`${API_BASE_URL}/uploads/product-file`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body,
+  });
+
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.message || 'File upload failed');
+  return result as { secure_url: string };
 }
 
 export const api = {

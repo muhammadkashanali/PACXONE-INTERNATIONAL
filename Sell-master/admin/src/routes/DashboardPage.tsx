@@ -9,6 +9,7 @@ import {
   fetchAdminProducts,
   fetchAdminQuotes,
   fetchCategories,
+  uploadProductDatasheet,
   uploadProductImage,
   updateCategory,
   updateProduct,
@@ -31,6 +32,7 @@ export function DashboardPage() {
   const [categoryEditingId, setCategoryEditingId] = useState<string | null>(null);
   const [categoryFormType, setCategoryFormType] = useState<'category' | 'subcategory'>('category');
   const [productImage, setProductImage] = useState<File | null>(null);
+  const [productDatasheet, setProductDatasheet] = useState<File | null>(null);
   const [productImagePreview, setProductImagePreview] = useState('');
   const [savingProduct, setSavingProduct] = useState(false);
   const [productParentCategory, setProductParentCategory] = useState('');
@@ -52,8 +54,10 @@ export function DashboardPage() {
     categoryId: 'industrial-automation',
     description: '',
     image: '',
+    datasheet: '',
     features: '',
     applications: '',
+    specs: '',
     availability: 'In Stock',
     featured: false,
   });
@@ -109,13 +113,16 @@ export function DashboardPage() {
       categoryId: firstParent?.slug || categories[0]?.slug || 'industrial-automation',
       description: '',
       image: '',
+      datasheet: '',
       features: '',
       applications: '',
+      specs: '',
       availability: 'In Stock',
       featured: false,
     });
     setProductParentCategory(firstParent?._id || '');
     setProductImage(null);
+    setProductDatasheet(null);
     setEditingId(null);
   };
 
@@ -146,6 +153,7 @@ export function DashboardPage() {
   const fillForm = (product: any) => {
     setEditingId(product._id || product.id);
     setProductImage(null);
+    setProductDatasheet(null);
     const selectedCategory = categories.find((category) => category.slug === (product.categoryId || product.category?.slug) || category._id === product.category);
     const selectedParent = selectedCategory?.parentCategory
       ? categories.find((category) => category._id === selectedCategory.parentCategory)
@@ -158,8 +166,10 @@ export function DashboardPage() {
       categoryId: product.categoryId || product.category?.slug || selectedCategory?.slug || categories[0]?.slug || 'industrial-automation',
       description: product.description || '',
       image: product.image || '',
+      datasheet: product.datasheet || '',
       features: Array.isArray(product.features) ? product.features.join('\n') : '',
       applications: Array.isArray(product.applications) ? product.applications.join('\n') : '',
+      specs: Array.isArray(product.specs) ? product.specs.map((spec: any) => `${spec.label}: ${spec.value}`).join('\n') : '',
       availability: product.availability || 'In Stock',
       featured: Boolean(product.featured),
     });
@@ -194,11 +204,17 @@ export function DashboardPage() {
     try {
       setSavingProduct(true);
       const image = productImage ? await uploadProductImage(productImage) : form.image;
+      const datasheet = productDatasheet ? await uploadProductDatasheet(productDatasheet) : form.datasheet;
       const payload = {
         ...form,
         image,
+        datasheet,
         features: form.features.split('\n').map((v) => v.trim()).filter(Boolean),
         applications: form.applications.split('\n').map((v) => v.trim()).filter(Boolean),
+        specs: form.specs.split('\n').map((line) => {
+          const separator = line.indexOf(':');
+          return separator === -1 ? null : { label: line.slice(0, separator).trim(), value: line.slice(separator + 1).trim() };
+        }).filter((spec): spec is { label: string; value: string } => Boolean(spec?.label && spec.value)),
       };
 
       if (editingId) {
@@ -432,9 +448,43 @@ export function DashboardPage() {
                 )}
               </div>
 
+              <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 700, color: '#374151' }}>
+                Datasheet
+                <input
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0] || null;
+                    if (file && (file.type !== 'application/pdf' || file.size > 20 * 1024 * 1024)) {
+                      setError('Datasheet must be a PDF file no larger than 20MB.');
+                      event.target.value = '';
+                      return;
+                    }
+                    setError('');
+                    setProductDatasheet(file);
+                  }}
+                  style={{ ...inputStyle, padding: 8 }}
+                />
+                {(productDatasheet || form.datasheet) && (
+                  <span style={{ color: '#6b7280', fontSize: 13 }}>
+                    {productDatasheet ? productDatasheet.name : 'Current datasheet uploaded'}
+                  </span>
+                )}
+              </label>
+
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
-                <textarea value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} placeholder="Features (one per line)" rows={6} style={{ ...inputStyle, minHeight: 150, resize: 'vertical' }} />
-                <textarea value={form.applications} onChange={(e) => setForm({ ...form, applications: e.target.value })} placeholder="Applications (one per line)" rows={6} style={{ ...inputStyle, minHeight: 150, resize: 'vertical' }} />
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 700, color: '#374151' }}>
+                  Key Features
+                  <textarea value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} placeholder="One feature per line" rows={6} style={{ ...inputStyle, minHeight: 150, resize: 'vertical' }} />
+                </label>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 700, color: '#374151' }}>
+                  Applications
+                  <textarea value={form.applications} onChange={(e) => setForm({ ...form, applications: e.target.value })} placeholder="One application per line" rows={6} style={{ ...inputStyle, minHeight: 150, resize: 'vertical' }} />
+                </label>
+                <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 700, color: '#374151' }}>
+                  Technical Specifications
+                  <textarea value={form.specs} onChange={(e) => setForm({ ...form, specs: e.target.value })} placeholder="Label: Value (one per line)" rows={6} style={{ ...inputStyle, minHeight: 150, resize: 'vertical' }} />
+                </label>
               </div>
 
               <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
@@ -499,8 +549,19 @@ export function DashboardPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
                   <div>
                     <strong>{quote.name}</strong>
-                    <p style={{ margin: '4px 0 0', color: '#6b7280' }}>{quote.email} • {quote.company || 'No company'}</p>
-                    <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 12 }}>{quote.productName || 'General inquiry'}</p>
+                    <p style={{ margin: '4px 0 0', color: '#6b7280' }}>
+                      <a href={`mailto:${quote.email}`} style={{ color: '#2563eb' }}>{quote.email}</a> • {quote.company || 'No company'}
+                    </p>
+                    <div style={{ marginTop: 10 }}>
+                      <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1.3, color: '#6b7280' }}>Requested products</div>
+                      {quote.productName ? (
+                        <ul style={{ margin: '6px 0 0', paddingLeft: 18, color: '#374151', fontSize: 13 }}>
+                          {quote.productName.split(', ').map((product: string, index: number) => <li key={`${product}-${index}`}>{product}</li>)}
+                        </ul>
+                      ) : (
+                        <p style={{ margin: '6px 0 0', color: '#6b7280', fontSize: 13 }}>General inquiry</p>
+                      )}
+                    </div>
                   </div>
 
                   <select value={quote.status || 'new'} onChange={(e) => handleStatus(quote._id, e.target.value)} style={{ ...inputStyle, minWidth: 150, height: 38 }}>

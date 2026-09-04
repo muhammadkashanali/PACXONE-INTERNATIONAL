@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ClipboardList } from "lucide-react";
+import { getQuoteCart } from "../../lib/quoteCart";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -15,12 +16,19 @@ export function SiteHeader() {
   const { pathname } = useLocation();
   const isHome = pathname === "/";
   const hasSolidTheme = scrolled || !isHome;
+  const [quoteCount, setQuoteCount] = useState(() => getQuoteCart().length);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const syncQuoteCount = () => setQuoteCount(getQuoteCart().length);
+    window.addEventListener("quote-cart-updated", syncQuoteCount);
+    return () => window.removeEventListener("quote-cart-updated", syncQuoteCount);
   }, []);
 
   return (
@@ -73,6 +81,14 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
+          <Link
+            to="/contact"
+            className={`relative inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors ${hasSolidTheme ? "text-foreground hover:bg-secondary" : "text-white hover:bg-white/10"}`}
+            aria-label={`Quote list${quoteCount ? `, ${quoteCount} product${quoteCount === 1 ? "" : "s"}` : ""}`}
+          >
+            <ClipboardList className="h-4 w-4" />
+            {quoteCount > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">{quoteCount}</span>}
+          </Link>
           <Link
             to="/contact"
             className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-[oklch(0.42_0.075_335)] transition-colors"

@@ -1,33 +1,11 @@
-import { api } from './api';
-
-const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1';
+import { api, uploadAdminFile } from './api';
 
 export async function uploadProductImage(file: File) {
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+  return (await uploadAdminFile(file)).secure_url;
+}
 
-  if (!cloudName || !uploadPreset) {
-    throw new Error('Cloudinary is not configured. Add the Cloudinary variables to admin/.env.');
-  }
-
-  const body = new FormData();
-  body.append('file', file);
-  body.append('upload_preset', uploadPreset);
-
-  const response = await fetch(`${CLOUDINARY_UPLOAD_URL}/${cloudName}/image/upload`, {
-    method: 'POST',
-    body,
-  });
-
-  if (!response.ok) {
-    const result = await response.json().catch(() => null);
-    throw new Error(result?.error?.message || 'Image upload failed');
-  }
-
-  const result = (await response.json()) as { secure_url?: string };
-  if (!result.secure_url) throw new Error('Cloudinary did not return an image URL');
-
-  return result.secure_url;
+export async function uploadProductDatasheet(file: File) {
+  return (await uploadAdminFile(file)).secure_url;
 }
 
 export async function loginToAdmin(email: string, password: string) {

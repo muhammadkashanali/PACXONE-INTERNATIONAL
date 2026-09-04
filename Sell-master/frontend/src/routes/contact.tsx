@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Mail, Phone, MapPin, MessageCircle, Send, CheckCircle2 } from "lucide-react";
 import { z } from "zod";
 import { submitQuote } from "@/lib/catalog";
+import { clearQuoteCart, getQuoteCart, removeFromQuoteCart, type QuoteCartItem } from "@/lib/quoteCart";
 
 export const Route = createFileRoute("/contact")({
   component: Contact,
@@ -46,6 +47,13 @@ function Contact() {
   const [sent, setSent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState("");
+  const [quoteItems, setQuoteItems] = useState<QuoteCartItem[]>(() => getQuoteCart());
+
+  useEffect(() => {
+    const syncQuoteCart = () => setQuoteItems(getQuoteCart());
+    window.addEventListener("quote-cart-updated", syncQuoteCart);
+    return () => window.removeEventListener("quote-cart-updated", syncQuoteCart);
+  }, []);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -67,9 +75,10 @@ function Contact() {
         company: res.data.company || "",
         phone: res.data.phone || "",
         email: res.data.email,
-        productName: "",
+        productName: quoteItems.map((item) => `${item.name} (${item.model})`).join(", "),
         message: res.data.message,
       });
+      clearQuoteCart();
       setSent(true);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : "Unable to send your inquiry right now.");
@@ -135,6 +144,22 @@ function Contact() {
             ) : (
               <form onSubmit={onSubmit} className="space-y-5" noValidate>
                 <h2 className="text-2xl font-bold">Send an inquiry</h2>
+                {quoteItems.length > 0 && (
+                  <div className="rounded-md border border-primary/30 bg-accent/40 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-sm font-semibold">Products in your quote ({quoteItems.length})</h3>
+                      <button type="button" onClick={clearQuoteCart} className="text-xs font-medium text-primary hover:underline">Clear all</button>
+                    </div>
+                    <ul className="mt-3 space-y-2">
+                      {quoteItems.map((item) => (
+                        <li key={item.id} className="flex items-center justify-between gap-3 text-sm">
+                          <span className="min-w-0 truncate">{item.name}</span>
+                          <button type="button" onClick={() => removeFromQuoteCart(item.id)} className="shrink-0 text-xs text-muted-foreground hover:text-destructive">Remove</button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 <div className="grid sm:grid-cols-2 gap-4">
                   <Field name="name" label="Name" required error={errors.name} />
                   <Field name="company" label="Company" error={errors.company} />

@@ -5,24 +5,17 @@ dotenv.config();
 
 const RECIPIENT_EMAIL = "pacxoneinternational@gmail.com";
 
-export async function sendQuoteNotification({
-    name,
-    company,
-    phone,
-    email,
-    productName,
-    message,
-}) {
+function createTransporter() {
     const host = process.env.SMTP_HOST;
     const port = Number(process.env.SMTP_PORT || 587);
     const user = process.env.SMTP_USER;
     const pass = process.env.SMTP_PASS;
 
     if (!host || !user || !pass) {
-        return;
+        return null;
     }
 
-    const transporter = nodemailer.createTransport({
+    return nodemailer.createTransport({
         host,
         port,
         secure: port === 465,
@@ -31,14 +24,10 @@ export async function sendQuoteNotification({
             pass,
         },
     });
+}
 
-    const subject = productName
-        ? `New quote request: ${productName}`
-        : "New quote request from website";
-
-    const text = [
-        "New website inquiry received.",
-        "",
+function getInquiryDetails({ name, company, phone, email, productName, message }) {
+    return [
         `Name: ${name}`,
         `Company: ${company || "N/A"}`,
         `Phone: ${phone || "N/A"}`,
@@ -47,6 +36,32 @@ export async function sendQuoteNotification({
         "",
         "Message:",
         message,
+    ].join("\n");
+}
+
+export async function sendQuoteNotification({
+    name,
+    company,
+    phone,
+    email,
+    productName,
+    message,
+}) {
+    const transporter = createTransporter();
+    if (!transporter) {
+        return;
+    }
+
+    const user = process.env.SMTP_USER;
+
+    const subject = productName
+        ? `New quote request: ${productName}`
+        : "New quote request from website";
+
+    const text = [
+        "New website inquiry received.",
+        "",
+        getInquiryDetails({ name, company, phone, email, productName, message }),
     ].join("\n");
 
     const html = `
@@ -69,5 +84,47 @@ export async function sendQuoteNotification({
         subject,
         text,
         html,
+    });
+}
+
+export async function sendCustomerConfirmation({
+    name,
+    email,
+    productName,
+    message,
+}) {
+    const transporter = createTransporter();
+    if (!transporter) {
+        return;
+    }
+
+    const productText = productName || "your requested products";
+    await transporter.sendMail({
+        from: process.env.SMTP_USER,
+        to: email,
+        replyTo: RECIPIENT_EMAIL,
+        subject: "We received your inquiry — Pacxone International",
+        text: [
+            `Hello ${name},`,
+            "",
+            `Thank you for contacting Pacxone International about ${productText}.`,
+            "We have received your inquiry and our team will respond within one business day.",
+            "",
+            "Your message:",
+            message,
+            "",
+            "Pacxone International",
+        ].join("\n"),
+        html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1f1f1f;">
+        <h2>Thank you for contacting Pacxone International</h2>
+        <p>Hello ${name},</p>
+        <p>We received your inquiry about <strong>${productText}</strong>.</p>
+        <p>Our team will respond within one business day.</p>
+        <p><strong>Your message:</strong></p>
+        <div style="padding: 12px; background: #f5f5f5; border-radius: 8px;">${message.replace(/\n/g, "<br />")}</div>
+        <p>Pacxone International</p>
+      </div>
+    `,
     });
 }

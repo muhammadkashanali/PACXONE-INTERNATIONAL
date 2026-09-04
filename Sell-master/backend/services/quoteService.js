@@ -1,5 +1,5 @@
 import Quote from "../models/Quote.js";
-import { sendQuoteNotification } from "../utils/sendQuoteEmail.js";
+import { sendCustomerConfirmation, sendQuoteNotification } from "../utils/sendQuoteEmail.js";
 
 export const createQuoteService = async ({
   name,
@@ -30,6 +30,17 @@ export const createQuoteService = async ({
     });
   } catch (error) {
     console.error("Failed to send quote notification email:", error);
+  }
+
+  try {
+    await sendCustomerConfirmation({
+      name,
+      email,
+      productName: productName || "",
+      message,
+    });
+  } catch (error) {
+    console.error("Failed to send customer confirmation email:", error);
   }
 
   return quote;

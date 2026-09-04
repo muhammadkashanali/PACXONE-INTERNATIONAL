@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Search, ArrowRight, ChevronDown } from "lucide-react";
+import { Search, ArrowRight, ChevronDown, ClipboardPlus } from "lucide-react";
 import { type Category, type Product } from "@/lib/products";
 import { fetchCategories, fetchProducts } from "@/lib/catalog";
+import { addToQuoteCart, getQuoteCart } from "@/lib/quoteCart";
 import { z } from "zod";
 
 const searchSchema = z.object({
@@ -33,6 +34,13 @@ function ProductsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
+  const [quoteIds, setQuoteIds] = useState<string[]>(() => getQuoteCart().map((item) => item.id));
+
+  useEffect(() => {
+    const syncQuoteCart = () => setQuoteIds(getQuoteCart().map((item) => item.id));
+    window.addEventListener("quote-cart-updated", syncQuoteCart);
+    return () => window.removeEventListener("quote-cart-updated", syncQuoteCart);
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -172,15 +180,12 @@ function ProductsPage() {
             ) : (
               <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                 {list.map((p) => (
-                  <Link
-                    key={p.id}
-                    to="/products/$id"
-                    params={{ id: p.id }}
-                    className="group bg-background rounded-lg border border-border overflow-hidden hover:border-primary/40 hover:shadow-[0_20px_60px_-20px_oklch(0.5_0.07_335/0.25)] transition-all"
-                  >
-                    <div className="aspect-square overflow-hidden bg-secondary">
-                      <img src={p.image} alt={p.name} loading="lazy" width={1024} height={768} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                    </div>
+                  <div key={p.id} className="group bg-background rounded-lg border border-border overflow-hidden hover:border-primary/40 hover:shadow-[0_20px_60px_-20px_oklch(0.5_0.07_335/0.25)] transition-all">
+                    <Link to="/products/$id" params={{ id: p.id }}>
+                      <div className="aspect-square overflow-hidden bg-secondary">
+                        <img src={p.image} alt={p.name} loading="lazy" width={1024} height={768} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      </div>
+                    </Link>
                     <div className="p-5">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-primary">{p.brand}</span>
@@ -190,11 +195,22 @@ function ProductsPage() {
                       </div>
                       <h3 className="mt-2 font-semibold leading-tight line-clamp-2">{p.name}</h3>
                       <p className="mt-1 text-xs text-muted-foreground">{p.model}</p>
-                      <div className="mt-4 flex items-center gap-1 text-xs font-semibold text-primary opacity-70 group-hover:opacity-100 group-hover:gap-2 transition-all">
-                        View details <ArrowRight className="h-3 w-3" />
+                      <div className="mt-4 flex items-center justify-between gap-3">
+                        <Link to="/products/$id" params={{ id: p.id }} className="inline-flex items-center gap-1 text-xs font-semibold text-primary opacity-70 group-hover:opacity-100 transition-all">
+                          View details <ArrowRight className="h-3 w-3" />
+                        </Link>
+                        <button
+                          type="button"
+                          disabled={quoteIds.includes(p.id)}
+                          onClick={() => addToQuoteCart(p)}
+                          className="inline-flex h-8 items-center gap-1 rounded-md border border-primary/30 px-2.5 text-[11px] font-semibold text-primary transition-colors hover:bg-accent disabled:cursor-default disabled:opacity-50"
+                        >
+                          <ClipboardPlus className="h-3.5 w-3.5" />
+                          {quoteIds.includes(p.id) ? "Added" : "Add to quote"}
+                        </button>
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             )}
