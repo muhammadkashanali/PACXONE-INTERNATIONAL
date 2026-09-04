@@ -18,12 +18,15 @@ const whyUs = [
 ];
 
 const clients = [
-  { mark: "AS", name: "Al-Sadr Industries" },
-  { mark: "MF", name: "MetaForge" },
-  { mark: "NE", name: "Northline Energy" },
-  { mark: "PC", name: "ProCore Systems" },
-  { mark: "VG", name: "Vertex Grid" },
-  { mark: "OM", name: "Orion Manufacturing" },
+  { name: "Getz Pharma", logo: "/getz.webp" },
+  { name: "Lucky Textile", logo: "/LUCKY.webp" },
+  { name: "SAMI Pharma", logo: "/SAMI.jpg" },
+  { name: "Healthtek", logo: "/healthtek.jpg" },
+  { name: "Hilton Pharma", logo: "/hilton.jpg" },
+  { name: "Hinucon", logo: "/HINUCON.gif" },
+  { name: "Helix", logo: "/helix.jpg" },
+  { name: "Oncogen", logo: "/oncogen.png" },
+  { name: "PP", logo: "/PP.jpg" },
 ];
 
 const testimonials = [
@@ -198,11 +201,19 @@ function Index() {
           <div className="mt-16 overflow-hidden border-y border-border py-5" aria-label="Companies we currently serve">
             <div className="flex w-max animate-client-marquee hover:[animation-play-state:paused]">
               {[...clients, ...clients].map((client, index) => (
-                <div key={`${client.name}-${index}`} className="flex w-[220px] shrink-0 items-center gap-3 px-6 sm:w-[260px]">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-accent text-xs font-bold tracking-tight text-primary">
-                    {client.mark}
-                  </span>
-                  <span className="whitespace-nowrap text-sm font-semibold text-foreground/75">{client.name}</span>
+                <div key={`${client.name}-${index}`} className="flex w-[260px] shrink-0 items-center justify-center px-1 sm:w-[320px]">
+                  {client.logo ? (
+                    <img
+                      src={client.logo}
+                      alt={client.name}
+                      loading="lazy"
+                      className="h-32 w-auto max-w-[300px] object-contain opacity-95 transition-opacity hover:opacity-100"
+                    />
+                  ) : (
+                    <div className="flex h-32 w-40 items-center justify-center rounded-md bg-accent text-sm font-bold tracking-tight text-primary">
+                      {client.name}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

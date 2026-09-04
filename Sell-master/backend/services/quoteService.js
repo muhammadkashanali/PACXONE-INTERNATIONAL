@@ -1,4 +1,5 @@
 import Quote from "../models/Quote.js";
+import { sendQuoteNotification } from "../utils/sendQuoteEmail.js";
 
 export const createQuoteService = async ({
   name,
@@ -8,7 +9,7 @@ export const createQuoteService = async ({
   productName,
   message,
 }) => {
-  return await Quote.create({
+  const quote = await Quote.create({
     name,
     company: company || "",
     phone: phone || "",
@@ -17,6 +18,21 @@ export const createQuoteService = async ({
     message,
     source: "website",
   });
+
+  try {
+    await sendQuoteNotification({
+      name,
+      company: company || "",
+      phone: phone || "",
+      email,
+      productName: productName || "",
+      message,
+    });
+  } catch (error) {
+    console.error("Failed to send quote notification email:", error);
+  }
+
+  return quote;
 };
 
 export const getQuotesService = async () => {

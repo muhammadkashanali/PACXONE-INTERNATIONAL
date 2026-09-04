@@ -555,10 +555,10 @@ export function DashboardPage() {
               <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 700, color: '#374151' }}>
                 Parent category {categoryFormType === 'subcategory' && <span style={{ color: '#dc2626' }}>*</span>}
                 <select required={categoryFormType === 'subcategory'} value={categoryForm.parentCategory} onChange={(e) => setCategoryForm({ ...categoryForm, parentCategory: e.target.value })} style={{ ...inputStyle, fontWeight: 400 }}>
-                {categoryFormType !== 'subcategory' && <option value="">Top-level category</option>}
-                {categories.filter((category) => !category.parentCategory).map((category) => (
-                  <option key={category._id} value={category._id}>{category.name}</option>
-                ))}
+                  {categoryFormType !== 'subcategory' && <option value="">Top-level category</option>}
+                  {categories.filter((category) => !category.parentCategory).map((category) => (
+                    <option key={category._id} value={category._id}>{category.name}</option>
+                  ))}
                 </select>
                 <span style={{ fontSize: 12, fontWeight: 400, color: '#6b7280' }}>{categoryFormType === 'subcategory' ? 'Required for every subcategory.' : 'Select a parent category to save this as a subcategory.'}</span>
               </label>

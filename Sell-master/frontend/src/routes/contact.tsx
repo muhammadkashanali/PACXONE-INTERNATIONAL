@@ -93,8 +93,8 @@ function Contact() {
           <div className="space-y-6">
             {[
               { icon: MapPin, label: "Address", value: "Office 401, Mehdi Tower, 115A, S.M.C.H.S, Shahrah-e-Faisal, Karachi", href: "https://www.google.com/maps/place/Mehdi+Tower/@24.8601414,67.0539185,17z/data=!4m14!1m7!3m6!1s0x3eb33e849a7255ab:0x11cd094961dbc6a9!2sMehdi+Tower!8m2!3d24.8601414!4d67.0564934!16s%2Fg%2F11xsnb3x_!3m5!1s0x3eb33e849a7255ab:0x11cd094961dbc6a9!8m2!3d24.8601414!4d67.0564934!16s%2Fg%2F11xsnb3x_?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D" },
-              { icon: Phone, label: "Phone", value: "", href: "" },
               { icon: MessageCircle, label: "WhatsApp", value: "+92 3002409524", href: "https://wa.me/+923002409524" },
+              { icon: Phone, label: "Phone", value: "021-3422220", href: "" },
               { icon: Mail, label: "Email", value: "info@pacxoneinternational.com", href: "mailto:info@pacxoneinternational.com" },
               { icon: Mail, label: "Email", value: "pacxoneinternational@gmail.com", href: "mailto:pacxoneinternational@gmail.com" },
             ].map((c) => (

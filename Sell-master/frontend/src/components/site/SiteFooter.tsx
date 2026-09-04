@@ -7,7 +7,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 grid gap-12 md:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="flex items-center gap-2.5 mb-4">
-            <img src="/white.ico" alt="Pacxone International" width={280} height={75} className="h-[60px] w-auto max-w-[240px] object-contain mix-blend-screen" />
+            <img src="/white.ico-removebg-preview.png" alt="Pacxone International" width={280} height={75} className="h-[60px] w-auto max-w-[240px] object-contain mix-blend-screen" />
             <span className="flex flex-col leading-none">
               <span className="text-base font-bold text-white">Pacxone</span>
               <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-white/50">International</span>
@@ -43,10 +43,10 @@ export function SiteFooter() {
           <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Contact</h4>
           <ul className="space-y-3 text-sm">
             <li className="flex gap-3"><MapPin className="h-4 w-4 mt-0.5 shrink-0 text-primary" /><a href="https://www.google.com/maps/place/Mehdi+Tower/@24.8601414,67.0539185,17z/data=!4m14!1m7!3m6!1s0x3eb33e849a7255ab:0x11cd094961dbc6a9!2sMehdi+Tower!8m2!3d24.8601414!4d67.0564934!16s%2Fg%2F11xsnb3x_!3m5!1s0x3eb33e849a7255ab:0x11cd094961dbc6a9!8m2!3d24.8601414!4d67.0564934!16s%2Fg%2F11xsnb3x_?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noreferrer" className="hover:text-primary">Office 401, Mehdi Tower, 115A, S.M.C.H.S, Shahrah-e-Faisal, Karachi</a></li>
-            <li className="flex gap-3"><Phone className="h-4 w-4 mt-0.5 shrink-0 text-primary" /><a href="tel:+10000000000" className="hover:text-primary">+92 3002409524</a></li>
-            <li className="flex gap-3"><Phone className="h-4 w-4 mt-0.5 shrink-0 text-primary" /><a href="tel:+10000000000" className="hover:text-primary"></a></li>
-            <li className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 shrink-0 text-primary" /><a href="mailto:info@pacxone.com" className="hover:text-primary">info@pacxoneinternational.com</a></li>
-            <li className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 shrink-0 text-primary" /><a href="mailto:info@pacxone.com" className="hover:text-primary">pacxoneinternational@gmail.com</a></li>
+            <li className="flex gap-3"><Phone className="h-4 w-4 mt-0.5 shrink-0 text-primary" /><a href="tel:+10000000000" className="hover:text-primary">+92 300-2409524</a></li>
+            <li className="flex gap-3"><Phone className="h-4 w-4 mt-0.5 shrink-0 text-primary" /><a href="tel:+10000000000" className="hover:text-primary"> 021-3422220</a></li>
+            <li className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 shrink-0 text-primary" /><a href="mailto:info@pacxoneinternational.com" className="hover:text-primary">info@pacxoneinternational.com</a></li>
+            <li className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 shrink-0 text-primary" /><a href="mailto:pacxoneinternational@gmail.com" className="hover:text-primary">pacxoneinternational@gmail.com</a></li>
           </ul>
         </div>
       </div>

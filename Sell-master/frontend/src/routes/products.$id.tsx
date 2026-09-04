@@ -97,7 +97,7 @@ function ProductDetail() {
               <Link to="/contact" className="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-[oklch(0.42_0.075_335)] transition-colors">
                 Request Quote <ArrowRight className="h-4 w-4" />
               </Link>
-              <a href={`mailto:info@pacxone.com?subject=Inquiry about ${encodeURIComponent(product.name)}`} className="inline-flex h-11 items-center gap-2 rounded-md border border-border px-5 text-sm font-semibold hover:bg-secondary transition-colors">
+              <a href={`mailto:info@pacxoneinternational.com?subject=Inquiry about ${encodeURIComponent(product.name)}`} className="inline-flex h-11 items-center gap-2 rounded-md border border-border px-5 text-sm font-semibold hover:bg-secondary transition-colors">
                 <Mail className="h-4 w-4" /> Email Inquiry
               </a>
               <button className="inline-flex h-11 items-center gap-2 rounded-md border border-border px-5 text-sm font-semibold hover:bg-secondary transition-colors">

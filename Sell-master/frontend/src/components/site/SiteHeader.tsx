@@ -32,17 +32,23 @@ export function SiteHeader() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-2.5 group">
-          <img src="/white.ico" alt="Pacxone International" width={220} height={59} className={`h-11 w-auto max-w-[190px] object-contain transition-transform group-hover:scale-[1.02] ${hasSolidTheme ? "mix-blend-multiply invert" : "mix-blend-screen"}`} />
+          <img
+            src={hasSolidTheme ? "/pacxone-brand-purple.png" : "/white.ico-removebg-preview.png"}
+            alt="Pacxone International"
+            width={220}
+            height={59}
+            className={`h-11 w-auto max-w-[190px] object-contain transition-transform group-hover:scale-[1.02] ${hasSolidTheme ? "" : "mix-blend-screen"}`}
+          />
           <span className="flex flex-col leading-none">
             <span
-              className={`text-base font-bold tracking-tight ${hasSolidTheme ? "text-foreground" : "text-white"
+              className={`text-base font-bold tracking-tight ${hasSolidTheme ? "text-[oklch(0.5_0.07_335)]" : "text-white"
                 }`}
             >
               Pacxone
             </span>
 
             <span
-              className={`text-[10px] font-medium uppercase tracking-[0.18em] ${hasSolidTheme ? "text-muted-foreground" : "text-white/70"
+              className={`text-[10px] font-medium uppercase tracking-[0.18em] ${hasSolidTheme ? "text-[oklch(0.5_0.07_335)]/80" : "text-white/70"
                 }`}
             >
               International
