@@ -10,7 +10,9 @@ export const Route = createFileRoute("/products/$id")({
     const product = await fetchProductById(params.id);
     if (!product) throw notFound();
     const [categories, allProducts] = await Promise.all([fetchCategories(), fetchProducts()]);
-    const related = allProducts.filter((p) => p.categoryId === product.categoryId && p.id !== product.id).slice(0, 4);
+    const sameCategory = allProducts.filter((p) => p.categoryId === product.categoryId && p.id !== product.id);
+    const otherProducts = allProducts.filter((p) => p.categoryId !== product.categoryId && p.id !== product.id);
+    const related = [...sameCategory, ...otherProducts].slice(0, 6);
     return { product: product as Product, categories, related };
   },
   head: ({ loaderData }) => {
@@ -181,16 +183,17 @@ function ProductDetail() {
       {related.length > 0 && (
         <section className="py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-bold mb-8">Related Products</h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <h2 className="text-2xl font-bold mb-8">More Products</h2>
+            <div className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory">
               {related.map((p) => (
-                <Link key={p.id} to="/products/$id" params={{ id: p.id }} className="group bg-background rounded-lg border border-border overflow-hidden hover:border-primary/40 transition-all">
+                <Link key={p.id} to="/products/$id" params={{ id: p.id }} className="group w-[260px] shrink-0 snap-start bg-background rounded-lg border border-border overflow-hidden hover:border-primary/40 transition-all sm:w-[280px]">
                   <div className="aspect-square overflow-hidden bg-secondary">
                     <img src={p.image} alt={p.name} loading="lazy" width={1024} height={768} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   </div>
                   <div className="p-4">
                     <p className="text-[10px] font-semibold uppercase tracking-wider text-primary">{p.brand}</p>
                     <h3 className="mt-1 text-sm font-semibold line-clamp-2">{p.name}</h3>
+                    <p className="mt-2 text-xs text-muted-foreground">Model: {p.model}</p>
                   </div>
                 </Link>
               ))}
