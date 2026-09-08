@@ -44,11 +44,18 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
-app.use("/api/auth", authRoutes);
-app.use("/api/categories", categoryRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/quotes", quoteRoutes);
-app.use("/api/uploads", uploadRoutes);
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    ok: true,
+    message: "Pacxone API is running.",
+  });
+});
+
+app.use(["/api/auth", "/auth"], authRoutes);
+app.use(["/api/categories", "/categories"], categoryRoutes);
+app.use(["/api/products", "/products"], productRoutes);
+app.use(["/api/quotes", "/quotes"], quoteRoutes);
+app.use(["/api/uploads", "/uploads"], uploadRoutes);
 
 app.use((err, _req, res, _next) => {
   console.error(err);
