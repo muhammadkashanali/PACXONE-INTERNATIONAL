@@ -12,6 +12,22 @@ dotenv.config();
 
 const app = express();
 
+// Set up permissive CORS to echo requesting origins (admin, main site, local)
+const corsOptions = {
+  origin: true, // Auto-allows requesting origin and reflects it in headers
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}
+
+// Apply CORS globally before all other route definitions
+app.use(cors(corsOptions))
+
+// Explicitly handle HTTP OPTIONS preflight requests for every route
+app.options('*', cors(corsOptions))
+
+app.use(express.json())
+
 app.use(
   cors({
     origin: true,
