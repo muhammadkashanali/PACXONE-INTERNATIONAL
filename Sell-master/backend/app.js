@@ -44,11 +44,11 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
-app.use("/api/auth", authRoutes);
-app.use("/api/categories", categoryRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/quotes", quoteRoutes);
-app.use("/api/uploads", uploadRoutes);
+app.use("/auth", authRoutes);
+app.use("/categories", categoryRoutes);
+app.use("/products", productRoutes);
+app.use("/quotes", quoteRoutes);
+app.use("/uploads", uploadRoutes);
 
 app.use((err, _req, res, _next) => {
   console.error(err);
