@@ -7,16 +7,18 @@ dotenv.config();
 
 const PORT = Number(process.env.PORT || 5000);
 
-const startServer = async () => {
-  await connectDB();
-  await seedDefaultData();
+app.listen(PORT, () => {
+  console.log(`Pacxone backend listening on port ${PORT}`);
+});
 
-  app.listen(PORT, () => {
-    console.log(`Pacxone backend running on http://localhost:${PORT}`);
-  });
+const initializeDatabase = async () => {
+  try {
+    await connectDB();
+    await seedDefaultData();
+    console.log("Database initialization completed.");
+  } catch (error) {
+    console.error("Database initialization failed:", error.message);
+  }
 };
 
-startServer().catch((error) => {
-  console.error("Failed to start server:", error);
-  process.exit(1);
-});
+void initializeDatabase();
