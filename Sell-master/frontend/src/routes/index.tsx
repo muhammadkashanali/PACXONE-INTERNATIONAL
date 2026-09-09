@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { ArrowRight, ShieldCheck, Truck, Headset, Award, Users, Cpu } from "lucide-react";
 import heroImg from "@/assets/hero-industrial.jpg";
-import { categories, products } from "@/lib/products";
+import { fetchCategories, fetchProducts } from "@/lib/catalog";
+import type { Category, Product } from "@/lib/products";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -36,6 +38,19 @@ const testimonials = [
 ];
 
 function Index() {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const loadCatalog = async () => {
+      const [categoryData, productData] = await Promise.all([fetchCategories(), fetchProducts()]);
+      setCategories(categoryData);
+      setProducts(productData);
+    };
+
+    void loadCatalog();
+  }, []);
+
   return (
     <>
       {/* HERO */}
