@@ -32,6 +32,7 @@ app.get("/api/health", (_req, res) => {
   res.status(200).json({
     ok: true,
     message: "Pacxone API is running.",
+    catalogSeeding: false,
   });
 });
 
@@ -39,6 +40,7 @@ app.get("/", (_req, res) => {
   res.status(200).json({
     ok: true,
     message: "Pacxone API is running.",
+    catalogSeeding: false,
   });
 });
 
